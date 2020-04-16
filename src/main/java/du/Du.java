@@ -2,19 +2,41 @@ package du;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 @SuppressWarnings("WeakerAccess")
 
 public class Du {
 
-    public Du() { } //what is this
+    private final boolean isFormat;
+    private final boolean isSum;
+    private final int base;
 
-    public long getSize(File path) { // possible: directory is currently modified??
+    public Du(int base, boolean isFormat, boolean isSum) {
+        this.isFormat = isFormat;
+        this.isSum = isSum;
+        this.base = base;
+    }
+
+    private static String getUnit(long size, int base) {
+        List<String> units = new ArrayList<String>(Arrays.asList("B", "KB", "MB", "GB"));
+        int unit = 0;
+        for(int i = 1; i < 4; i++){
+            if (size/base == 0)
+                break;
+            size /= base;
+            unit = i;
+        }
+        return size + " " + units.get(unit);
+    }
+
+    private static long getSize(File path) {
         long size = 0;
 
         if (path.isDirectory()) {
             File[] files = path.listFiles();
-            if (files != null){ //nothing to do if path is an empty folder
+            if (files != null){
                 for (File file:files) {
                     size += getSize(file);
                 }
@@ -27,16 +49,23 @@ public class Du {
         return size;
     }
 
-    public long[] getSizes (List<String> paths){
+    public List<String> getSizes (List<File> files){
+        long sum = 0;
+        List<String> finalSizes = new ArrayList<String>();
 
-        long[] sizes = new long[paths.size()];
+        for(File file: files){
+            long size = getSize(file);
 
-        for (int i = 0; i < paths.size(); i++) {
-            File file = new File(paths.get(i));
-            sizes[i] = getSize(file);
+            if (isSum) {
+                sum += size;
+            } else {
+                finalSizes.add(isFormat ? getUnit(size, base) : String.valueOf(size/base));
+            }
         }
 
-        return sizes;
+        if (isSum) finalSizes.add(isFormat? getUnit(sum, base): String.valueOf(sum/base));
+
+        return finalSizes;
     }
 
 }

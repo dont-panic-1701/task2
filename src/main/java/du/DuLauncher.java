@@ -4,8 +4,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -23,24 +23,14 @@ public class DuLauncher {
     private boolean changeBase = true;
 
     @Argument(required = true, usage = "File paths")
-    private List<String> paths = new ArrayList<String>();
+    private List<File> paths = new ArrayList<File>();
 
     public static void main(String[] args) {
         new DuLauncher().launch(args);
     }
 
 
-    private static String getUnit(long size, int base) {
-        List<String> units = new ArrayList<String>(Arrays.asList("B", "KB", "MB", "GB"));
-        int unit = 0;
-        for(int i = 1; i < 4; i++){
-            if (size/base == 0)
-                break;
-            size /= base;
-            unit = i;
-        }
-        return size + " " + units.get(unit);
-    }
+
 
 
     private void launch(String[] args) {
@@ -55,20 +45,10 @@ public class DuLauncher {
             return;
         }
 
-        Du du = new Du();
-        int base = changeBase ? 1000 : 1024; //if there was no --si flag will changeBase be null?
-
-        long[] sizes = du.getSizes(paths);
-        System.out.println("Requested files sizes:");
-        long sum = 0;
-        for(long size: sizes){
-            if (cSum) {
-                sum += size;
-            } else {
-                System.out.println(hFormat ? getUnit(size, base) : size);
-            }
+        System.out.println("Requested file sizes:");
+        Du du = new Du(changeBase ? 1000 : 1024, hFormat, cSum);
+        for (String size:du.getSizes(paths) ) {
+            System.out.println(size);
         }
-        if (cSum) System.out.println(hFormat? getUnit(sum, base): sum);
-
     }
 }
