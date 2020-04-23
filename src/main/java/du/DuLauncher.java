@@ -23,7 +23,7 @@ public class DuLauncher {
     private boolean changeBase = true;
 
     @Argument(required = true, usage = "File paths")
-    private List<File> paths = new ArrayList<File>();
+    private List<File> paths = new ArrayList<>();
 
     public static void main(String[] args) {
         new DuLauncher().launch(args);
@@ -42,7 +42,7 @@ public class DuLauncher {
             System.err.println(e.getMessage());
             System.err.println("java -jar du.jar [-h] [-c] [--si] file1 file2 file3...");
             parser.printUsage(System.err);
-            return;
+            System.exit(1);
         }
 
         System.out.println("Requested file sizes:");

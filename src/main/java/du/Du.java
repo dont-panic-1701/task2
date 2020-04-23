@@ -20,7 +20,7 @@ public class Du {
     }
 
     private static String getUnit(long size, int base) {
-        List<String> units = new ArrayList<String>(Arrays.asList("B", "KB", "MB", "GB"));
+        List<String> units = new ArrayList<>(Arrays.asList("B", "KB", "MB", "GB"));
         int unit = 0;
         for(int i = 1; i < 4; i++){
             if (size/base == 0)
@@ -33,6 +33,11 @@ public class Du {
 
     private static long getSize(File path) {
         long size = 0;
+
+        if (!path.exists()) {
+            System.err.println("File or directory does not exist");
+            System.exit(1);
+        }
 
         if (path.isDirectory()) {
             File[] files = path.listFiles();
@@ -51,7 +56,7 @@ public class Du {
 
     public List<String> getSizes (List<File> files){
         long sum = 0;
-        List<String> finalSizes = new ArrayList<String>();
+        List<String> finalSizes = new ArrayList<>();
 
         for(File file: files){
             long size = getSize(file);
